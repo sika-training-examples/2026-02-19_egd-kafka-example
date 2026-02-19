@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -9,6 +10,13 @@ import (
 
 	"github.com/segmentio/kafka-go"
 )
+
+type Message struct {
+	Version  int    `json:"version"`
+	Hostname string `json:"hostname"`
+	I        int    `json:"i"`
+	Message  string `json:"msg"`
+}
 
 func main() {
 	ctx := context.Background()
@@ -36,22 +44,62 @@ func process(
 		Topic:   targetTopic,
 	})
 
+	hostname, err := os.Hostname()
+	handleErr(err)
+
 	for {
-		msg, err := r.ReadMessage(ctx)
+		sourceKafkaMsg, err := r.ReadMessage(ctx)
+		handleErr(err)
+
+		sourceMsg, err := deserialize(sourceKafkaMsg.Value)
 		if err != nil {
-			log.Println("could not read message " + err.Error())
+			log.Printf("error deserializing message: %v", err)
+			continue
 		}
-		err = w.WriteMessages(ctx, kafka.Message{
-			Key:   msg.Key,
-			Value: []byte("Hello " + string(msg.Value)),
+		targetMsg := serialize(Message{
+			Version:  1,
+			Hostname: hostname,
+			I:        sourceMsg.I,
+			Message:  "Hello " + sourceMsg.Message,
 		})
-		if err != nil {
-			log.Printf("could not write message " + err.Error())
-		}
+
+		err = w.WriteMessages(ctx, kafka.Message{
+			Key:   sourceKafkaMsg.Key,
+			Value: []byte(targetMsg),
+		})
+		handleErr(err)
+
 		fmt.Printf(
-			"process: source_topic=%s target_topic=%s key=%s source_msg=%s\n",
-			sourceTopic, targetTopic, string(msg.Key), string(msg.Value),
+			"[%s]->(this)->[%s] key=%s msg=%s\n",
+			sourceTopic, targetTopic, string(sourceKafkaMsg.Key), targetMsg,
 		)
 		time.Sleep(time.Second)
 	}
+}
+
+func handleErr(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func handleErrLogOnly(err error) {
+	if err != nil {
+		log.Printf("error: %v", err)
+	}
+}
+
+func serialize(msg Message) string {
+	jsonBytes, err := json.Marshal(msg)
+	handleErr(err)
+	return string(jsonBytes)
+}
+
+func deserialize(data []byte) (Message, error) {
+	var msg Message
+	err := json.Unmarshal(data, &msg)
+	if err != nil {
+		return Message{}, err
+	}
+	return msg, nil
 }
