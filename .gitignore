@@ -18,3 +18,8 @@
 *.local.json
 *.local.txt
 Makefile.local.mk
+
+# Go
+/producer/producer
+/processor/processor
+/consumer/consumer
