@@ -2,15 +2,9 @@ module producer
 
 go 1.25
 
-require (
-	github.com/goombaio/namegenerator v0.0.0-20181006234301-989e774b106e
-	github.com/segmentio/kafka-go v0.4.38
-	github.com/spf13/cobra v1.6.1
-)
+require github.com/segmentio/kafka-go v0.4.38
 
 require (
-	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/klauspost/compress v1.15.9 // indirect
 	github.com/pierrec/lz4/v4 v4.1.15 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
 )

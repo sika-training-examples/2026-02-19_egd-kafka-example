@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"os"
 	"strconv"
 	"time"
 
-	"github.com/goombaio/namegenerator"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -28,16 +28,13 @@ func produce(
 		Topic:   topic,
 	})
 
-	seed := time.Now().UTC().UnixNano()
-	nameGenerator := namegenerator.NewNameGenerator(seed)
-
 	i := 0
 	var key string
 	var msg string
 
 	for {
 		key = strconv.Itoa(i)
-		msg = nameGenerator.Generate()
+		msg = randomKind() + " " + randomName()
 		err := w.WriteMessages(ctx, kafka.Message{
 			Key:   []byte(key),
 			Value: []byte(msg),
@@ -49,4 +46,16 @@ func produce(
 		i++
 		time.Sleep(time.Second)
 	}
+}
+
+func randomKind() string {
+	kinds := []string{"dog", "cat", "rat", "bat", "eel"}
+	return kinds[rand.Intn(len(kinds))]
+}
+
+func randomName() string {
+	names := []string{
+		"Dela", "Nela", "Fred", "Debie", "Kuna",
+	}
+	return names[rand.Intn(len(names))]
 }
