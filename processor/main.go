@@ -12,10 +12,10 @@ import (
 )
 
 type Message struct {
-	Version  int    `json:"version"`
-	Hostname string `json:"hostname"`
+	Version  int    `json:"v"`
+	Hostname string `json:"h"`
 	I        int    `json:"i"`
-	Message  string `json:"msg"`
+	Message  string `json:"m"`
 }
 
 func main() {
