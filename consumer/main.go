@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/segmentio/kafka-go"
@@ -29,9 +30,16 @@ func consume(
 	})
 	for {
 		msg, err := r.ReadMessage(ctx)
-		if err != nil {
-			panic("could not read message " + err.Error())
-		}
-		fmt.Printf("consume: topic=%s key=%s msg=%s\n", topic, msg.Key, msg.Value)
+		handleErr(err)
+		fmt.Printf(
+			"[%s]->(this) key=%s msg=%s\n",
+			topic, string(msg.Key), string(msg.Value),
+		)
+	}
+}
+
+func handleErr(err error) {
+	if err != nil {
+		log.Fatalln(err)
 	}
 }
