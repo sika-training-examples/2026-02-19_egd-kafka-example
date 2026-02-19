@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: producer
+spec:
+  replicas: 6
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: producer
+  template:
+    metadata:
+      labels:
+        app: producer
+    spec:
+      containers:
+        - name: main
+          image: ttl.sh/egd-producer
+          env:
+            - name: KAFKA_BROKER_ADDRESS
+              value: egd-kafka-bootstrap.kafka.svc:9092
+            - name: KAFKA_TOPIC
+              value: foo
+          resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi

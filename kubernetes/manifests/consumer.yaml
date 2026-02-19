@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: consumer
+  template:
+    metadata:
+      labels:
+        app: consumer
+    spec:
+      containers:
+        - name: main
+          image: ttl.sh/egd-consumer
+          env:
+            - name: KAFKA_BROKER_ADDRESS
+              value: egd-kafka-bootstrap.kafka.svc:9092
+            - name: KAFKA_TOPIC
+              value: bar
+            - name: KAFKA_GROUP
+              value: bar
+          resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi
