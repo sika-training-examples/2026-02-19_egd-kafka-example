@@ -1,4 +1,4 @@
-IMAGE = ttl.sh/egd-consumer
+IMAGE = ghcr.io/sika-training-examples/egd-consumer
 
 build-and-push:
 	make build

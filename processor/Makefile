@@ -1,4 +1,4 @@
-IMAGE = ttl.sh/egd-processor
+IMAGE = ghcr.io/sika-training-examples/egd-processor
 
 build-and-push:
 	make build

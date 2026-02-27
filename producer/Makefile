@@ -1,4 +1,4 @@
-IMAGE = ttl.sh/egd-producer
+IMAGE = ghcr.io/sika-training-examples/egd-producer
 
 build-and-push:
 	make build
